@@ -1,14 +1,9 @@
 import {Column, DataType, Model, Table} from "sequelize-typescript";
+import { CreateUserDto } from "../dto/create-user.dto";
 import { StatusName } from "./status-name.enum";
 
-interface UserCreationAtrrs{
-    email: string;
-    password: string;
-    status:string;
-}
-
 @Table({tableName:'users'})
-export class User extends Model<User, UserCreationAtrrs>{
+export class User extends Model<User, CreateUserDto>{
     @Column({type: DataType.UUIDV4, unique:true, autoIncrement: true, primaryKey: true})
     id:number;
 
@@ -25,7 +20,7 @@ export class User extends Model<User, UserCreationAtrrs>{
     password:string;
 
     @Column({type: DataType.DATEONLY, unique:false, allowNull: false})
-    birthDate:string
+    birthDate:Date;
 
     @Column({type:DataType.ENUM, unique:false, allowNull: false})
     status:StatusName;

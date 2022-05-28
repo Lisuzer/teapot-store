@@ -26,6 +26,8 @@
     "@nestjs/core": "^7.5.5",
     "@nestjs/platform-express": "^7.5.5",
     "@nestjs/sequelize": "^0.1.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
     "cross-env": "^7.0.3",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
