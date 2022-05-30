@@ -6,6 +6,7 @@ import {TypeOrmModule} from "@nestjs/typeorm"
 import { TeapotsModule } from './teapots/teapots.module';
 import { User } from './users/schemas/users.entity';
 import { UsersModule } from './users/users.module';
+import { ManufacturerModule } from './manufacturers/manufacturers.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
       entities: [User],
       autoLoadEntities: true,
     }),
+    ManufacturerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
