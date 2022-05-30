@@ -22,6 +22,11 @@ export class UsersController {
         return this.usersService.getAllUsers();
     }
 
+    @Get()
+    getOne(@Body() id: string): Promise<User>{
+        return this.usersService.getOneUser(id);
+    }
+
     @Delete()
     remove(@Body() id: string):Promise<DeleteResult>{
         return this.usersService.removeUser(id);
@@ -31,5 +36,4 @@ export class UsersController {
     update(@Body() id: string, dto: UpdateUserDto):Promise<User>{
         return this.usersService.updateUser(id, dto);
     }
-
 }
