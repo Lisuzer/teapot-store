@@ -13,6 +13,7 @@ export class CreateUserDto{
     @IsNotEmpty()
     @ApiProperty({
         description: "First Name",
+        required: true,
         default: "Валерий"
     })
     name: string;
@@ -21,6 +22,7 @@ export class CreateUserDto{
     @IsNotEmpty()
     @ApiProperty({
         description:"Second Name",
+        required: true,
         default:"Самса"
     })
     surname: string;
@@ -29,6 +31,7 @@ export class CreateUserDto{
     @IsNotEmpty()
     @ApiProperty({
         description: "User email adress",
+        required: true,
         default: "example@gmail.com"
     })
     email: string;
@@ -37,6 +40,7 @@ export class CreateUserDto{
     @IsNotEmpty()
     @ApiProperty({
         description: "User password",
+        required: true,
         default: "password"
     })
     password:string;
@@ -45,6 +49,7 @@ export class CreateUserDto{
     @IsNotEmpty()
     @ApiProperty({
         description: "User birthday",
+        required: true,
         default: "2002,01,01"
     })
     birthDate:Date
@@ -53,7 +58,8 @@ export class CreateUserDto{
     @IsNotEmpty()
     @ApiProperty({
         description: "User status",
-        default: "user"
+        required: true,
+        default: StatusName.CLIENT
     })
     status:StatusName;
 }
