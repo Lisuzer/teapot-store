@@ -2,19 +2,29 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import {TypeOrmModule} from "@nestjs/typeorm"
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { TeapotsModule } from './teapots/teapots.module';
-import { User } from './users/schemas/users.entity';
-import { UsersModule } from './users/users.module';
+import { User } from './auth/schemas/users.entity';
 import { ManufacturerModule } from './manufacturers/manufacturers.module';
+import { DeliveriesModule } from './deliveries/deliveries.module';
+import { OrdersModule } from './orders/orders.module';
+import { CartsModule } from './carts/carts.module';
+import { Manufacturer } from './manufacturers/schemas/manufacturers.entity';
+import { Teapot } from './teapots/schemas/teapots.entity';
+import { Cart } from './carts/schemas/carts.entity';
+import { Order } from './orders/schemas/orders.entyty';
+import { Delivery } from './deliveries/schemas/deliveries.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     TeapotsModule,
-    UsersModule,
-    ConfigModule.forRoot({
-      envFilePath:`.${process.env.NODE_ENV}.env`
-    }),
+    ManufacturerModule,
+    DeliveriesModule,
+    OrdersModule,
+    CartsModule,
+    AuthModule,
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
@@ -22,12 +32,12 @@ import { ManufacturerModule } from './manufacturers/manufacturers.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASS,
       database: process.env.POSTGRES_DB,
-      entities: [User],
+      entities: [User, Manufacturer, Teapot, Cart, Order, Delivery],
       autoLoadEntities: true,
+      synchronize: true
     }),
-    ManufacturerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
