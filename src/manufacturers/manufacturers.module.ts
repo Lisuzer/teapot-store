@@ -7,6 +7,6 @@ import { Manufacturer } from './schemas/manufacturers.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Manufacturer])],
   controllers: [ManufacturerController],
-  providers: [ManufacturerService]
+  providers: [ManufacturerService],
 })
 export class ManufacturerModule {}

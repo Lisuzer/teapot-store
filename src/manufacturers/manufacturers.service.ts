@@ -8,27 +8,30 @@ import { Manufacturer } from './schemas/manufacturers.entity';
 
 @Injectable()
 export class ManufacturerService {
-    constructor(@InjectRepository (Manufacturer) private manufacturersRepository: Repository<Manufacturer>){}
+  constructor(
+    @InjectRepository(Manufacturer)
+    private manufacturersRepository: Repository<Manufacturer>,
+  ) {}
 
-    async getAllManufacturers(): Promise<Manufacturer[]>{
-        return this.manufacturersRepository.find();
-    }
+  async getAllManufacturers(): Promise<Manufacturer[]> {
+    return this.manufacturersRepository.find();
+  }
 
-    async getOneManufacturer(id: string): Promise<Manufacturer>{
-        return this.manufacturersRepository.findOne(id);
-    }
+  async getOneManufacturer(id: string): Promise<Manufacturer> {
+    return this.manufacturersRepository.findOne(id);
+  }
 
-    async deleteManufacturer(id: string): Promise<DeleteResult>{
-        return this.manufacturersRepository.delete(id);
-    }
+  async deleteManufacturer(id: string): Promise<DeleteResult> {
+    return this.manufacturersRepository.delete(id);
+  }
 
-    async createManufacturer(dto: CreateManufacturerDto): Promise<Manufacturer>{
-        return this.manufacturersRepository.create(dto);
-    }
+  async createManufacturer(dto: CreateManufacturerDto): Promise<Manufacturer> {
+    return this.manufacturersRepository.save(dto);
+  }
 
-    async update(id: string, dto: UpdateManufacturersDto): Promise<Manufacturer>{
-        let manufacturer = await this.manufacturersRepository.findOne(id);
-        manufacturer = {...manufacturer, ...dto};
-        return this.manufacturersRepository.save(manufacturer);
-    }
+  async update(id: string, dto: UpdateManufacturersDto): Promise<Manufacturer> {
+    let manufacturer = await this.manufacturersRepository.findOne(id);
+    manufacturer = { ...manufacturer, ...dto };
+    return this.manufacturersRepository.save(manufacturer);
+  }
 }

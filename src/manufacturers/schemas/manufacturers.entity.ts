@@ -1,13 +1,17 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Teapot } from 'src/teapots/schemas/teapots.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity()
-export class Manufacturer{
-    @PrimaryGeneratedColumn("uuid")
-    id:string;
+export class Manufacturer {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({type: "string"})
-    name: string;
+  @Column()
+  name: string;
 
-    @Column({type: "string"})
-    country: string;
+  @Column()
+  country: string;
+
+  @OneToMany(() => Teapot, (teapots) => teapots.manufacturer)
+  teapots: Teapot[];
 }
