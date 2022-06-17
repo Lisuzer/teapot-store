@@ -8,7 +8,16 @@ export class CreateOrderDto extends PickType(OrderDto, ['userId', 'deliveryId', 
     @ApiProperty({
         description: 'teapot id & amount',
         required: true,
-        default: ''
+        default: `[
+            {
+                "teapotId": " ",
+                "amount": "2",
+            }, 
+            {
+                "teapotId": " ",
+                "amount": "2",
+            }
+        ]`
     })
     @IsNotEmpty()
     orderInfo: PerchasedTeapotsDto[];

@@ -1,7 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HTTP_RESPONSE } from 'src/interfaces/HTTP_RESPONSE.interface';
 import { Manufacturer } from 'src/manufacturers/schemas/manufacturers.entity';
+import { PaginationOptions } from 'src/pagination/pagination';
 import { Repository } from 'typeorm';
 import { CreateTeapotDto } from './dto/cteate-teapot.dto';
 import { UpdateTeapotDto } from './dto/update-teapot.dto';
@@ -17,6 +18,9 @@ export class TeapotsService {
     ) { }
 
     async getAll(): Promise<HTTP_RESPONSE> {
+        const perPage = 25;
+        const page = 1;
+        const skip = (perPage * page) - perPage;
         const teapots = await this.teapotRep.find({
             join: {
                 alias: 'teapot',
@@ -26,8 +30,32 @@ export class TeapotsService {
             },
         });
 
+        //const teapots = this.teapotRep.createQueryBuilder('teapots')
         if (!teapots) {
-            throw new HttpException('Teapots not found', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('Teapots not found');
+        }
+        return {
+            data: teapots,
+            message: "All teapots",
+            success: true,
+        };
+    }
+
+    async paginate(options: PaginationOptions): Promise<HTTP_RESPONSE> {
+        const { page, limit } = options;
+        const skip = page * limit - limit;
+        const teapots = await this.teapotRep.find({
+            join: {
+                alias: 'teapot',
+                leftJoinAndSelect: {
+                    manufacturer: 'teapot.manufacturer'
+                },
+            },
+            skip: skip,
+            take: limit,
+        });
+        if (!teapots) {
+            throw new BadRequestException('Teapots not found');
         }
         return {
             data: teapots,

@@ -7,6 +7,7 @@ import {
     ParseUUIDPipe,
     Post,
     Put,
+    Query,
     UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -35,19 +36,6 @@ import { TeapotsService } from './teapots.service';
 @Controller('teapots')
 export class TeapotsController {
     constructor(private teapotsService: TeapotsService) { }
-
-    @ApiOkResponse({
-        description: 'Entity found',
-        type: HTTP_RESPONSE,
-    })
-    @ApiOperation({
-        description: 'Getting teapot information | Required roles: Guest',
-    })
-    @Get(':id')
-    async getById(@Param('id') id: string) {
-        return this.teapotsService.getById(id);
-    }
-
     @ApiOkResponse({
         description: 'Entity found',
         type: HTTP_RESPONSE,
@@ -56,8 +44,10 @@ export class TeapotsController {
         description: 'Getting all teapots information | Required roles: Guest',
     })
     @Get()
-    async getAll() {
-        return this.teapotsService.getAll();
+    async index(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 20) {
+        return this.teapotsService.paginate({page, limit});
     }
 
     @ApiCreatedResponse({
@@ -91,7 +81,6 @@ export class TeapotsController {
         return this.teapotsService.create(teapotDto);
     }
 
-
     @ApiCreatedResponse({
         description: 'Entity successfully updated',
         type: HTTP_RESPONSE,
@@ -122,7 +111,6 @@ export class TeapotsController {
     async update(@Param('id', ParseUUIDPipe) id: string, @Body() teapotDto: UpdateTeapotDto) {
         return this.teapotsService.update(id, teapotDto);
     }
-
 
     @ApiCreatedResponse({
         description: 'Entity successfully deleted',
