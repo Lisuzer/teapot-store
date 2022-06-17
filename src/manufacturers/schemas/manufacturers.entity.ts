@@ -6,12 +6,12 @@ export class Manufacturer {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @Column()
   country: string;
 
-  @OneToMany(() => Teapot, (teapots) => teapots.manufacturer)
+  @OneToMany(() => Teapot, (teapots) => teapots.manufacturer, { eager: true })
   teapots: Teapot[];
 }

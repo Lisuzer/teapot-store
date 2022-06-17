@@ -5,10 +5,12 @@ import { User } from 'src/auth/schemas/users.entity';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 import { Order } from './schemas/orders.entyty';
+import { Cart } from 'src/carts/schemas/carts.entity';
+import { CartService } from 'src/carts/carts.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, User, Delivery])],
+  imports: [TypeOrmModule.forFeature([Order, User, Delivery, Cart])],
   controllers: [OrdersController],
-  providers: [OrdersService],
+  providers: [OrdersService, CartService],
 })
 export class OrdersModule {}

@@ -16,11 +16,10 @@ export class OrderDto {
 
     @ApiProperty({
         description: "order sum",
-        required: true,
+        required: false,
         default: ""
     })
     @IsNumber()
-    @IsNotEmpty()
     orderSum: number;
 
 
@@ -32,6 +31,16 @@ export class OrderDto {
     @IsEnum(StatusName)
     @IsNotEmpty()
     status: StatusName;
+
+
+    @ApiProperty({
+        description: "Order additional info",
+        required: true,
+        default: "Please give me one teapot for free(("
+    })
+    @IsString()
+    @IsNotEmpty()
+    orderAddInfo: string;
 
 
     @ApiProperty({

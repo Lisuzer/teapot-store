@@ -1,5 +1,5 @@
 import { Order } from 'src/orders/schemas/orders.entyty';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Delivery {
@@ -16,5 +16,6 @@ export class Delivery {
   cityName: string;
 
   @OneToMany(() => Order, (orders) => orders.delivery)
+  @JoinColumn()
   orders: Order[];
 }

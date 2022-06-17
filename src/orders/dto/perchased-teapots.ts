@@ -2,31 +2,22 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 
-export class CartDto {
+export class PerchasedTeapotsDto {
     @ApiProperty({
-        description: 'Order Id',
+        description: 'Id purchased teapot',
         required: true,
         default: '',
     })
-    @IsString()
     @IsNotEmpty()
-    orderId: string;
-
-    @ApiProperty({
-        description: 'Teapot Id',
-        required: true,
-        default: '',
-    })
     @IsString()
-    @IsNotEmpty()
     teapotId: string;
 
     @ApiProperty({
-        description: 'Amount of teapots',
+        description: 'Amount of purchesad teapots',
         required: true,
-        default: '9',
+        default: '2',
     })
-    @IsNumber()
     @IsNotEmpty()
+    @IsNumber()
     amount: number;
 }

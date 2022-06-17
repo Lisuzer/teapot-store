@@ -4,6 +4,7 @@ import { User } from 'src/auth/schemas/users.entity';
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -15,13 +16,13 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'date' })
   orderDate: Date;
 
-  @Column()
+  @Column({ type: 'float4', default: 0 })
   orderSum: number;
 
-  @Column()
+  @Column({ type: 'enum', enum: StatusName, default: StatusName.RECIVED })
   status: StatusName;
 
   @ManyToOne(() => User, (user) => user.orders)
@@ -30,6 +31,7 @@ export class Order {
   @ManyToOne(() => Delivery, (delivery) => delivery.orders)
   delivery: Delivery;
 
-  @OneToMany(() => Cart, (carts) => carts.order)
+  @OneToMany(() => Cart, (carts) => carts.order, { eager: true })
+  @JoinTable()
   carts: Cart[];
 }

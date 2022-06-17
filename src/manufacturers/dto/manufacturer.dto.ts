@@ -14,7 +14,7 @@ export class ManufacturerDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'What country is the manufacturer from',
+    description: 'Manufacturer country',
     required: true,
     default: 'Ukraine',
   })

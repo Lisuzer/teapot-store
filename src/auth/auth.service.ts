@@ -9,6 +9,7 @@ import { HTTP_RESPONSE } from 'src/interfaces/HTTP_RESPONSE.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangeUserStatusDto } from './dto/change-user-status.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UserStatus } from './schemas/user-status.enum';
 
 @Injectable()
 export class AuthService {
@@ -102,7 +103,7 @@ export class AuthService {
             updateUserDto.password = await this.hashPassword(password);
         }
 
-        this.userRep.update(user.id, updateUserDto);
+        await this.userRep.update(user.id, updateUserDto);
         const updatedUser = await this.userRep.findOne(user.id);
         return { data: updatedUser, message: 'Update user', success: true };
     }
@@ -140,6 +141,76 @@ export class AuthService {
                 success: false,
                 message: e,
             };
+        }
+    }
+
+    async getUser({ user }: any): Promise<HTTP_RESPONSE> {
+        try {
+            const result = await this.userRep.findOne(user.id)
+            return { data: { user: result }, message: 'Authorized', success: true }
+        } catch (e) {
+            return {
+                data: null,
+                success: false,
+                message: e,
+            }
+        }
+    }
+
+    async createAdmin(user: CreateUserDto): Promise<HTTP_RESPONSE> {
+        const { email, password, mobPhone, name, surname } = user;
+        const hashedPassword = await this.hashPassword(password);
+        const newUser = await this.userRep.save({
+            name,
+            surname,
+            email,
+            mobPhone,
+            password: hashedPassword,
+            status: UserStatus.ADMIN,
+        });
+        return {
+            data: newUser,
+            success: true,
+            message: 'Registered successfully',
+        };
+    }
+
+    async removeUser({ user }: any): Promise<HTTP_RESPONSE> {
+        try {
+            const userToDelete = user;
+            this.userRep.delete(user.id);
+            return {
+                data: userToDelete,
+                success: true,
+                message: "Deleted user",
+            }
+        } catch (e) {
+            return {
+                data: null,
+                success: false,
+                message: e,
+            }
+        }
+    }
+
+    async removeUserById(id: string): Promise<HTTP_RESPONSE> {
+        try {
+            const user = await this.userRep.findOne(id);
+            if (!user) {
+                throw new HttpException('Employee not found', HttpStatus.NOT_FOUND);
+            }
+            await this.userRep.delete({ id: user.id });
+            return {
+                data: user,
+                success: true,
+                message: "User by id " + user.id,
+            }
+        } catch (e) {
+            return {
+                data: null,
+                success: false,
+                message: e,
+            }
         }
     }
 }

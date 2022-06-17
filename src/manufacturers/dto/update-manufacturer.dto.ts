@@ -17,9 +17,9 @@ export class UpdateManufacturersDto {
     @IsNotEmpty()
     @IsOptional()
     @ApiProperty({
-        description: "What country is the manufacturer from",
+        description: "Manufacturer country",
         required: false,
-        default: "Ukrain"
+        default: "Ukraine"
     })
     country?: string;
 }

@@ -1,6 +1,5 @@
 import {
     ExecutionContext,
-    Inject,
     Injectable,
     CanActivate,
   } from '@nestjs/common';
@@ -23,6 +22,6 @@ import {
       }
   
       const { user } = context.switchToHttp().getRequest();
-      return requiredStatuses.some((status) => user.status?.includes(status));
+      return requiredStatuses.some((status) => user.status.includes(status));
     }
   }

@@ -6,6 +6,7 @@ import {
     UseGuards,
     Request,
     Put,
+    Delete,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -150,7 +151,7 @@ export class AuthController {
     @UseGuards(JwtAuthGuard)
     @Get('user')
     getUser(@Request() req) {
-        return { data: { user: req.user }, message: 'Authorized', success: true };
+        return this.authService.getUser(req);
     }
 
 
@@ -178,6 +179,77 @@ export class AuthController {
     @Put('user')
     updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
         return this.authService.updateProfile(req, updateUserDto);
+    }
+
+
+
+    @Post('create-admin')
+    createAdmin(@Body() userDto: CreateUserDto) {
+        return this.authService.createAdmin(userDto)
+    }
+
+
+
+    @ApiOkResponse({
+        description: 'Entity deleted successfully',
+        type: HTTP_RESPONSE,
+    })
+    @ApiBadRequestResponse({
+        description: 'Invalid payload provided',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Error while deleting entity',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiUnauthorizedResponse({
+        description: 'User unauthorized',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiOperation({
+        description: 'Deleting user | Required conditions: **Authorized**',
+    })
+    @ApiBearerAuth('JWT-auth')
+    @UseGuards(AuthGuard('jwt'), StatusesGuard)
+    @Delete('user')
+    removeUser(@Request() req) {
+        return this.authService.removeUser(req);
+    }
+
+
+    @ApiOkResponse({
+        description: 'Entity deleted successfully',
+        type: HTTP_RESPONSE,
+    })
+    @ApiNotFoundResponse({
+        description: 'Entity not found',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiBadRequestResponse({
+        description: 'Invalid payload provided',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Error while deleting entity',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiUnauthorizedResponse({
+        description: 'User unauthorized',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiForbiddenResponse({
+        description: 'Permission not granted',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiOperation({
+        description: 'Deleting user by id | Required status: **Admin**',
+    })
+    @ApiBearerAuth('JWT-auth')
+    @Status(UserStatus.ADMIN)
+    @UseGuards(AuthGuard('jwt'), StatusesGuard)
+    @Delete('user-by-id')
+    removeUserById(@Body() id: string) {
+        return this.authService.removeUserById(id);
     }
 }
 

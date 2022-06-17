@@ -25,7 +25,8 @@ export class TeapotDto {
     @ApiProperty({
         description: "Teapot weight",
         required: true,
-        default: "2,5"
+        type: 'float4',
+        default: "2.5"
     })
     @IsNotEmpty()
     @IsNumber()
@@ -43,7 +44,8 @@ export class TeapotDto {
     @ApiProperty({
         description: "Teapot capacity",
         required: true,
-        default: "1,8"
+        type: 'float4',
+        default: "1.8"
     })
     @IsNotEmpty()
     @IsNumber()
@@ -70,7 +72,8 @@ export class TeapotDto {
     @ApiProperty({
         description: "Teapot price",
         required: true,
-        default: "1999,99"
+        type: 'float4',
+        default: "1999.9"
     })
     @IsNotEmpty()
     @IsNumber()
@@ -92,5 +95,5 @@ export class TeapotDto {
     })
     @IsNotEmpty()
     @IsString()
-    manufacturerId: string;
+    manufacturer: string;
 }
