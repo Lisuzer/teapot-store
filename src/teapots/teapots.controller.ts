@@ -19,6 +19,7 @@ import {
     ApiNotFoundResponse,
     ApiOkResponse,
     ApiOperation,
+    ApiQuery,
     ApiTags,
     ApiUnauthorizedResponse
 } from '@nestjs/swagger';
@@ -43,11 +44,36 @@ export class TeapotsController {
     @ApiOperation({
         description: 'Getting all teapots information | Required roles: Guest',
     })
+    @ApiQuery({
+        name: "keyword",
+        type: String,
+        description: "Keyword for search. Optional",
+        required: false
+    })
     @Get()
     async index(
         @Query('page') page: number = 1,
-        @Query('limit') limit: number = 20) {
-        return this.teapotsService.paginate({page, limit});
+        @Query('limit') limit: number = 20,
+        @Query('keyword') keyword: string) {
+        return this.teapotsService.paginate({ page, limit, keyword });
+    }
+
+    @ApiOkResponse({
+        description: 'Entity found',
+        type: HTTP_RESPONSE,
+    })
+    @ApiOperation({
+        description: 'Getting all teapots information | Required roles: Guest',
+    })
+    @ApiQuery({
+        name: "keyword",
+        type: String,
+        description: "Keyword for search. Optional",
+        required: false
+    })
+    @Get("all-teapots")
+    async getAll() {
+        return this.teapotsService.getAll();
     }
 
     @ApiCreatedResponse({
@@ -76,7 +102,7 @@ export class TeapotsController {
     @ApiBearerAuth('JWT-auth')
     @Status(UserStatus.ADMIN)
     @UseGuards(AuthGuard('jwt'), StatusesGuard)
-    @Post()
+    @Post("create-teapot")
     async create(@Body() teapotDto: CreateTeapotDto) {
         return this.teapotsService.create(teapotDto);
     }
@@ -108,7 +134,7 @@ export class TeapotsController {
     @Status(UserStatus.ADMIN)
     @UseGuards(AuthGuard('jwt'), StatusesGuard)
     @Put(':id')
-    async update(@Param('id', ParseUUIDPipe) id: string, @Body() teapotDto: UpdateTeapotDto) {
+    async update(@Param('id') id: string, @Body() teapotDto: UpdateTeapotDto) {
         return this.teapotsService.update(id, teapotDto);
     }
 
@@ -139,8 +165,38 @@ export class TeapotsController {
     @Status(UserStatus.ADMIN)
     @UseGuards(AuthGuard('jwt'), StatusesGuard)
     @Delete(':id')
-    async delete(@Param('id', ParseUUIDPipe) id: string) {
+    async delete(@Param('id') id: string) {
         return this.teapotsService.delete(id);
     }
 
+    @ApiCreatedResponse({
+        description: 'Entity successfully finded',
+        type: HTTP_RESPONSE,
+    })
+    @ApiNotFoundResponse({
+        description: 'Entity not found',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiBadRequestResponse({
+        description: 'Invalid payload provided',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiUnauthorizedResponse({
+        description: 'User unauthorized',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiForbiddenResponse({
+        description: 'Permission not granted',
+        type: HTTP_EXCEPTION,
+    })
+    @ApiOperation({
+        description: 'Get teapot by id | Required roles: Admin',
+    })
+    @ApiBearerAuth('JWT-auth')
+    @Status(UserStatus.ADMIN)
+    @UseGuards(AuthGuard('jwt'), StatusesGuard)
+    @Get(":id")
+    async getById(@Param('id') id: string) {
+        return this.teapotsService.getById(id);
+    }
 }

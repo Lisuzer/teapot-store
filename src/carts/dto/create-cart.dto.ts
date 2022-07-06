@@ -6,7 +6,16 @@ export class CreateCartDto {
     @ApiProperty({
         description: 'teapot id & amount',
         required: true,
-        default: ''
+        default: [
+            {
+                "teapotId": " ",
+                "amount": "2",
+            }, 
+            {
+                "teapotId": " ",
+                "amount": "2",
+            }
+        ]
     })
     @IsNotEmpty()
     orderInfo: PerchasedTeapotsDto[];

@@ -19,7 +19,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiUnauthorizedResponse
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Status } from 'src/auth/decorators/status.decorator';
 import { StatusesGuard } from 'src/auth/guards/status.guard';
@@ -33,14 +33,15 @@ import { ManufacturerService } from './manufacturers.service';
 @ApiTags('manufacturers')
 @Controller('manufacturers')
 export class ManufacturerController {
-  constructor(private manufacturersService: ManufacturerService) { }
+  constructor(private manufacturersService: ManufacturerService) {}
 
   @ApiOkResponse({
     description: 'Entity found',
     type: HTTP_RESPONSE,
   })
   @ApiOperation({
-    description: 'Getting all manufacturers information | Required roles: Guest',
+    description:
+      'Getting all manufacturers information | Required roles: Guest',
   })
   @Get()
   async getAll() {
@@ -85,7 +86,7 @@ export class ManufacturerController {
   @ApiBearerAuth('JWT-auth')
   @Status(UserStatus.ADMIN)
   @UseGuards(AuthGuard('jwt'), StatusesGuard)
-  @Post()
+  @Post('create')
   async create(@Body() dto: CreateManufacturerDto) {
     return this.manufacturersService.create(dto);
   }
@@ -148,7 +149,10 @@ export class ManufacturerController {
   @Status(UserStatus.ADMIN)
   @UseGuards(AuthGuard('jwt'), StatusesGuard)
   @Put(':id')
-  async update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateManufacturersDto) {
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateManufacturersDto,
+  ) {
     return this.manufacturersService.update(id, dto);
   }
 }
