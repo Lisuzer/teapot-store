@@ -44,30 +44,6 @@ export class TeapotsController {
   @ApiOperation({
     description: 'Getting all teapots information | Required roles: Guest',
   })
-  @ApiQuery({
-    name: 'keyword',
-    type: String,
-    description: 'Keyword for search. Optional',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'sortBy',
-    type: String,
-    description: 'Optional',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'howSort',
-    type: String,
-    description: 'Optional',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'manufacturerName',
-    type: String,
-    description: 'Optional',
-    required: false,
-  })
   @Get()
   async index(
     @Query('page') page: number = 1,
