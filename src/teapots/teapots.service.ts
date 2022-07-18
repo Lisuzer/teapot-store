@@ -12,6 +12,7 @@ import { Manufacturer } from 'src/manufacturers/schemas/manufacturers.entity';
 import { PaginationOptions } from 'src/pagination/pagination';
 import { ILike, Like, Repository } from 'typeorm';
 import { CreateTeapotDto } from './dto/cteate-teapot.dto';
+import { SearchTeapotsFilters } from './dto/search-teapots-filters';
 import { UpdateTeapotDto } from './dto/update-teapot.dto';
 import { Teapot } from './schemas/teapots.entity';
 
@@ -44,14 +45,14 @@ export class TeapotsService {
     };
   }
 
-  async paginate(options: PaginationOptions): Promise<HTTP_RESPONSE> {
+  async paginate(options: PaginationOptions, filters: SearchTeapotsFilters): Promise<HTTP_RESPONSE> {
     const page = options.page || 1;
-    const manufacturerName = options.manufacturerName || '';
+    const manufacturerName = filters.manufacturerName || '';
     const limit = options.limit || 20;
-    const keyword = options.keyword || '';
+    const keyword = filters.keyword || '';
     const skip = page * limit - limit;
-    const sortBy = options.sortBy || 'amount';
-    const howSort = (options.howSort == 'DESC' ? 'DESC' : 'ASC') || 'DESC';
+    const sortBy = filters.sortBy || 'amount';
+    const howSort = (filters.howSort == 'DESC' ? 'DESC' : 'ASC') || 'DESC';
     let teapots = [];
     if (sortBy == 'popularity') {
       teapots = await this.teapotRep
@@ -66,11 +67,11 @@ export class TeapotsService {
       }
       console.log(teapots);
       let to = Number(skip) + Number(limit);
-      /*if (manufacturerName != 'All') {
+      if (manufacturerName != 'All') {
         teapots = teapots.filter(el => {
           return (el.manufacturer.name !== manufacturerName)
         })
-      }*/
+      }
       teapots = teapots.slice(skip, to);
       teapots.forEach((el) => delete el['cartsCount']);
     } else {

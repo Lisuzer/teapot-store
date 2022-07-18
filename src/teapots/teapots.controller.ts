@@ -29,6 +29,7 @@ import { UserStatus } from 'src/auth/schemas/user-status.enum';
 import { HTTP_EXCEPTION } from 'src/interfaces/HTTP_EXCEPTION.interface';
 import { HTTP_RESPONSE } from 'src/interfaces/HTTP_RESPONSE.interface';
 import { CreateTeapotDto } from './dto/cteate-teapot.dto';
+import { SearchTeapotsFilters } from './dto/search-teapots-filters';
 import { UpdateTeapotDto } from './dto/update-teapot.dto';
 import { TeapotsService } from './teapots.service';
 
@@ -71,19 +72,9 @@ export class TeapotsController {
   async index(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
-    @Query('keyword') keyword: string,
-    @Query('sortBy') sortBy: string,
-    @Query('howSort') howSort: string,
-    @Query('manufacturerName') manufacturerName: string,
+    @Body() filters: SearchTeapotsFilters,
   ) {
-    return this.teapotsService.paginate({
-      page,
-      limit,
-      keyword,
-      sortBy,
-      howSort,
-      manufacturerName,
-    });
+    return this.teapotsService.paginate({ page, limit }, filters);
   }
 
   @ApiOkResponse({
