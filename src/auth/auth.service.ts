@@ -224,7 +224,7 @@ export class AuthService {
   async createAdmin(user: CreateUserDto): Promise<HTTP_RESPONSE> {
     const { email, password, mobPhone, name, surname } = user;
     const hashedPassword = await this.hashPassword(password);
-    const newUser = await this.userRep.save({
+    const { password: pass, ...newUser } = await this.userRep.save({
       name,
       surname,
       email,

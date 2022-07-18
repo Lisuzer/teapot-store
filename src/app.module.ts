@@ -28,6 +28,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     AuthModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
+      url: 'postgres://fifrhvgl:68gD-CQ-NYcLXuDFZd9YoU-L57sLYLCh@abul.db.elephantsql.com/fifrhvgl',
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
       port: Number(process.env.POSTGRES_PORT),
