@@ -12,7 +12,6 @@ import { Manufacturer } from 'src/manufacturers/schemas/manufacturers.entity';
 import { PaginationOptions } from 'src/pagination/pagination';
 import { ILike, Like, Repository } from 'typeorm';
 import { CreateTeapotDto } from './dto/cteate-teapot.dto';
-import { SearchTeapotsFilters } from './dto/search-teapots-filters';
 import { UpdateTeapotDto } from './dto/update-teapot.dto';
 import { Teapot } from './schemas/teapots.entity';
 
@@ -45,14 +44,14 @@ export class TeapotsService {
     };
   }
 
-  async paginate(options: PaginationOptions, filters: SearchTeapotsFilters): Promise<HTTP_RESPONSE> {
+  async paginate(options: PaginationOptions): Promise<HTTP_RESPONSE> {
     const page = options.page || 1;
-    const manufacturerName = filters.manufacturerName || '';
+    const manufacturerName = options.manufacturerName || '';
     const limit = options.limit || 20;
-    const keyword = filters.keyword || '';
+    const keyword = options.keyword || '';
     const skip = page * limit - limit;
-    const sortBy = filters.sortBy || 'amount';
-    const howSort = (filters.howSort == 'DESC' ? 'DESC' : 'ASC') || 'DESC';
+    const sortBy = options.sortBy || 'amount';
+    const howSort = (options.howSort == 'DESC' ? 'DESC' : 'ASC') || 'DESC';
     let teapots = [];
     if (sortBy == 'popularity') {
       teapots = await this.teapotRep

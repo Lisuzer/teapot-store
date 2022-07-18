@@ -29,7 +29,6 @@ import { UserStatus } from 'src/auth/schemas/user-status.enum';
 import { HTTP_EXCEPTION } from 'src/interfaces/HTTP_EXCEPTION.interface';
 import { HTTP_RESPONSE } from 'src/interfaces/HTTP_RESPONSE.interface';
 import { CreateTeapotDto } from './dto/cteate-teapot.dto';
-import { SearchTeapotsFilters } from './dto/search-teapots-filters';
 import { UpdateTeapotDto } from './dto/update-teapot.dto';
 import { TeapotsService } from './teapots.service';
 
@@ -44,13 +43,47 @@ export class TeapotsController {
   @ApiOperation({
     description: 'Getting all teapots information | Required roles: Guest',
   })
+  @ApiQuery({
+    name: 'keyword',
+    type: String,
+    description: 'Keyword for search. Optional',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'sortBy',
+    type: String,
+    description: 'Optional',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'howSort',
+    type: String,
+    description: 'Optional',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'manufacturerName',
+    type: String,
+    description: 'Optional',
+    required: false,
+  })
   @Get()
   async index(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
-    @Body() filters: SearchTeapotsFilters,
+    @Query('keyword') keyword: string,
+    @Query('sortBy') sortBy: string,
+    @Query('howSort') howSort: string,
+    @Query('manufacturerName') manufacturerName: string,
   ) {
-    return this.teapotsService.paginate({ page, limit }, filters);
+    return this.teapotsService.paginate({
+      page,
+      limit,
+      keyword,
+      sortBy,
+      howSort,
+      manufacturerName,
+    });
   }
 
   @ApiOkResponse({
