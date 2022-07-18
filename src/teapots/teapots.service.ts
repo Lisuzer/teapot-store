@@ -6,10 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CartService } from 'src/carts/carts.service';
+import { Cart } from 'src/carts/schemas/carts.entity';
 import { HTTP_RESPONSE } from 'src/interfaces/HTTP_RESPONSE.interface';
 import { Manufacturer } from 'src/manufacturers/schemas/manufacturers.entity';
 import { PaginationOptions } from 'src/pagination/pagination';
-import { ILike, Repository } from 'typeorm';
+import { ILike, Like, Repository } from 'typeorm';
 import { CreateTeapotDto } from './dto/cteate-teapot.dto';
 import { UpdateTeapotDto } from './dto/update-teapot.dto';
 import { Teapot } from './schemas/teapots.entity';
@@ -22,7 +23,7 @@ export class TeapotsService {
     @InjectRepository(Manufacturer)
     private manufacturerRep: Repository<Manufacturer>,
     private cartService: CartService,
-  ) {}
+  ) { }
 
   async getAll(): Promise<HTTP_RESPONSE> {
     const teapots = await this.teapotRep.find({
@@ -45,26 +46,56 @@ export class TeapotsService {
 
   async paginate(options: PaginationOptions): Promise<HTTP_RESPONSE> {
     const page = options.page || 1;
+    const manufacturerName = options.manufacturerName || '';
     const limit = options.limit || 20;
     const keyword = options.keyword || '';
     const skip = page * limit - limit;
-    const teapots = await this.teapotRep.find({
-      where: {
-        title: ILike(`%${keyword}%`),
-      },
-      join: {
-        alias: 'teapot',
-        leftJoinAndSelect: {
-          manufacturer: 'teapot.manufacturer',
+    const sortBy = options.sortBy || 'amount';
+    const howSort = (options.howSort == 'DESC' ? 'DESC' : 'ASC') || 'DESC';
+    let teapots = [];
+    if (sortBy == 'popularity') {
+      teapots = await this.teapotRep
+        .createQueryBuilder('teapot')
+        .loadRelationCountAndMap('teapot.cartsCount', 'teapot.carts', 'cartsCount')
+        .leftJoinAndSelect('teapot.manufacturer', 'manufacturer')
+        .getMany();
+      if (howSort == 'ASC') {
+        teapots.sort((a, b) => a.cartsCount > b.cartsCount ? 1 : -1)
+      } else {
+        teapots.sort((a, b) => a.cartsCount > b.cartsCount ? -1 : 1)
+      }
+      console.log(teapots);
+      let to = Number(skip) + Number(limit);
+      /*if (manufacturerName != 'All') {
+        teapots = teapots.filter(el => {
+          return (el.manufacturer.name !== manufacturerName)
+        })
+      }*/
+      teapots = teapots.slice(skip, to);
+      teapots.forEach((el) => delete el['cartsCount']);
+    } else {
+      teapots = await this.teapotRep.find({
+        relations: ['manufacturer'],
+        where: {
+          title: ILike(`%${keyword}%`),
+          manufacturer: {
+            name: ILike(`%${manufacturerName}%`)
+          }
         },
-      },
-      order: {
-        amount: 'DESC',
-      },
-      skip: skip,
-      take: limit,
-    });
-    if (!teapots) {
+        join: {
+          alias: 'teapot',
+          leftJoinAndSelect: {
+            manufacturer: 'teapot.manufacturer'
+          }
+        },
+        order: {
+          [sortBy]: howSort
+        },
+        skip: skip,
+        take: limit,
+      });
+    }
+    if (!teapots.length) {
       throw new BadRequestException('Teapots not found');
     }
     return {

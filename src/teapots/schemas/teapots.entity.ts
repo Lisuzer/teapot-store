@@ -45,4 +45,7 @@ export class Teapot {
     onDelete: 'CASCADE',
   })
   manufacturer: Manufacturer;
+
+  @OneToMany(()=>Cart, (carts)=> carts.teapot)
+  carts: Cart[];
 }

@@ -12,6 +12,7 @@ export class Cart {
 
   @ManyToOne(() => Order, (order) => order.carts, {
     primary: true,
+    onDelete: 'CASCADE'
   })
   order: Order;
 }

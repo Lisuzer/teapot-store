@@ -8,6 +8,7 @@ import { User } from './schemas/users.entity';
 import { JwtStrategy } from './guards/jwt-strategy';
 import { StatusesGuard } from './guards/status.guard';
 import { AuthController } from './auth.controller';
+import { GoogleStrategy } from './guards/google-strategy';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { AuthController } from './auth.controller';
       })
     }),
   ],
-  providers: [AuthService, JwtStrategy, StatusesGuard],
+  providers: [AuthService, JwtStrategy, StatusesGuard, GoogleStrategy],
   exports: [AuthService],
   controllers: [AuthController]
 })

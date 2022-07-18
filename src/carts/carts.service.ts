@@ -18,7 +18,7 @@ export class CartService {
     private orderRep: Repository<Order>,
     @InjectRepository(Teapot)
     private teapotRep: Repository<Teapot>,
-  ) {}
+  ) { }
 
   async create(dto: CreateCartDto): Promise<HTTP_RESPONSE> {
     const { orderId, orderInfo } = dto;

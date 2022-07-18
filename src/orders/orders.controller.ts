@@ -9,6 +9,7 @@ import {
   Request,
   Put,
   UseGuards,
+  Optional,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -19,6 +20,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -31,11 +33,12 @@ import { HTTP_RESPONSE } from 'src/interfaces/HTTP_RESPONSE.interface';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrdersService } from './orders.service';
+import { StatusName } from './schemas/status-name.enum';
 
 @ApiTags('orders')
 @Controller('orders')
 export class OrdersController {
-  constructor(private orderService: OrdersService) {}
+  constructor(private orderService: OrdersService) { }
   @ApiCreatedResponse({
     description: 'Entity successfully created',
     type: HTTP_RESPONSE,
@@ -95,7 +98,7 @@ export class OrdersController {
   @UseGuards(AuthGuard('jwt'), StatusesGuard)
   @Put(':id')
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Body() orderDto: UpdateOrderDto,
   ) {
     return this.orderService.update(id, orderDto);
@@ -147,12 +150,18 @@ export class OrdersController {
   @ApiOperation({
     description: 'Getting all orders | Required status: **Admin**',
   })
+  @ApiQuery({
+    name: 'filter',
+    type: String,
+    required: false,
+    description: 'Optional'
+  })
   @ApiBearerAuth('JWT-auth')
   @Status(UserStatus.ADMIN)
   @UseGuards(AuthGuard('jwt'), StatusesGuard)
   @Get('get-all')
-  getAll() {
-    return this.orderService.findAll();
+  getAll(@Param() filter: string) {
+    return this.orderService.findAll(filter);
   }
 
   @ApiOkResponse({

@@ -8,6 +8,7 @@ import {
   Delete,
   Res,
   Request,
+  Header,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -37,7 +38,7 @@ import { UserStatus } from './schemas/user-status.enum';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @ApiCreatedResponse({
     description: 'Successfully created entity',
@@ -243,8 +244,13 @@ export class AuthController {
     return this.authService.removeUserById(id);
   }
 
-  //@Post("logout")
-  //logout(@Res({ passthrough: true }) res: Response) {
-  //    return this.authService.logout(res);
-  //}
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Request() req) { }
+
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  googleAuthRedirect(@Request() req) {
+    return this.authService.signInWithGoogle(req);
+  }
 }

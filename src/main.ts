@@ -7,7 +7,13 @@ import { AllExceptionsFilter } from './exception.filter';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 5000;
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: "*",
+    allowedHeaders: "*",
+    credentials: true,
+    preflightContinue: true
+  });
   app.use(cookieParser());
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalPipes(

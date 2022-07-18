@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,13 +16,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangeUserStatusDto } from './dto/change-user-status.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserStatus } from './schemas/user-status.enum';
+import { LoginWithGoogleDto } from './dto/login-with-google.dto';
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRep: Repository<User>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, 10);
@@ -24,19 +31,31 @@ export class AuthService {
 
   async registerAccount(user: CreateUserDto): Promise<HTTP_RESPONSE> {
     const { email, password, mobPhone, name, surname } = user;
-    const hashedPassword = await this.hashPassword(password);
-    const newUser = await this.userRep.save({
-      name,
-      surname,
-      email,
-      mobPhone,
-      password: hashedPassword,
-    });
-    return {
-      data: newUser,
-      success: true,
-      message: 'Registered successfully',
-    };
+    try {
+      const isUser = await this.userRep.find({ where: { email } });
+      if (isUser.length) {
+        throw new BadRequestException('User with this email exist');
+      }
+      const hashedPassword = await this.hashPassword(password);
+      const newUser = await this.userRep.save({
+        name,
+        surname,
+        email,
+        mobPhone,
+        password: hashedPassword,
+      });
+      return {
+        data: newUser,
+        success: true,
+        message: 'Registered successfully',
+      };
+    } catch (e) {
+      return {
+        data: e,
+        message: "Can't register account",
+        success: false,
+      };
+    }
   }
 
   async validateUser(loginUser: LoginUserDto): Promise<HTTP_RESPONSE> {
@@ -88,13 +107,42 @@ export class AuthService {
 
     if (user) {
       const token = await this.jwtService.signAsync({ user });
-      return { data: { token }, message, success: true };
+      return { data: { token }, message: 'token', success: true };
     }
     return {
       data: null,
       success: false,
-      message,
+      message: "Can't login user",
     };
+  }
+
+  async loginWithGoogle(loginUser: LoginWithGoogleDto) {
+    const { email, googleId } = loginUser;
+    try {
+      const foundUser = await this.userRep.findOne(
+        { email },
+        {
+          select: [
+            'id',
+            'name',
+            'surname',
+            'email',
+            'mobPhone',
+            'birthDate',
+            'status',
+          ],
+        },
+      );
+
+      console.log(foundUser);
+
+      if (foundUser) {
+        const token = await this.jwtService.signAsync({ foundUser });
+        return { data: { token }, message: 'token', success: true };
+      }
+    } catch (e) {
+      return { data: e, message: 'Can`t login', success: false };
+    }
   }
 
   async updateProfile(
@@ -230,12 +278,47 @@ export class AuthService {
     }
   }
 
-  //async logout(res: Response) {
-  //  res.clearCookie('jwt');
-  //  return {
-  //    data: null,
-  //    message: 'cookie was deleted',
-  //    succes: true,
-  //  };
-  //}
+  async signInWithGoogle(data): Promise<HTTP_RESPONSE> {
+    if (!data.user) throw new BadRequestException();
+
+    let user = await this.userRep.findOne({
+      where: [{ googleId: data.user.id }],
+    });
+
+    if (user)
+      return await this.loginWithGoogle({
+        googleId: data.user.googleId,
+        email: data.user.email,
+      });
+
+    user = await this.userRep.findOne({ where: [{ email: data.user.email }] });
+
+    if (user) {
+      await this.userRep.update(user.id, { googleId: data.user.googleId });
+      return await this.loginWithGoogle({
+        googleId: data.user.googleId,
+        email: user.email,
+      });
+    }
+
+    try {
+      const newUser = new User();
+      newUser.name = data.user.name;
+      newUser.surname = data.user.surname;
+      newUser.email = data.user.email;
+      newUser.googleId = data.user.googleId;
+      console.log(newUser);
+      await this.userRep.save(newUser);
+      return await this.loginWithGoogle({
+        googleId: newUser.googleId,
+        email: newUser.email,
+      });
+    } catch (e) {
+      return {
+        data: e,
+        message: "Can't login with google",
+        success: false,
+      };
+    }
+  }
 }

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,6 +15,8 @@ import { Cart } from './carts/schemas/carts.entity';
 import { Order } from './orders/schemas/orders.entyty';
 import { Delivery } from './deliveries/schemas/deliveries.entity';
 import { AuthModule } from './auth/auth.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -35,6 +37,28 @@ import { AuthModule } from './auth/auth.module';
       entities: [User, Manufacturer, Teapot, Cart, Order, Delivery],
       autoLoadEntities: true,
       synchronize: true
+    }),
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: {
+          host: process.env.MAIL_HOST,
+          secure: false,
+          auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASSWORD,
+          }
+        },
+        defaults: {
+          from: `"TeapotStore" <${process.env.MAIL_FROM}>`,
+        },
+        template: {
+          dir: process.cwd() + '/src/templates',
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
     }),
   ],
   controllers: [AppController],

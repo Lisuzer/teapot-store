@@ -10,19 +10,22 @@ export class User {
   @Column()
   name: string;
 
-  @Column({unique: true})
+  @Column({ nullable: true })
   mobPhone: string;
 
   @Column()
   surname: string;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   email: string;
 
-  @Column({ select: false })
+  @Column({ nullable: true, select: false })
   password: string;
 
-  @Column({nullable: true, type: 'date'})
+  @Column({ nullable: true })
+  googleId: string;
+
+  @Column({ nullable: true, type: 'date' })
   birthDate: Date;
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.CLIENT })

@@ -1,13 +1,15 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/schemas/users.entity';
 import { CartService } from 'src/carts/carts.service';
 import { Delivery } from 'src/deliveries/schemas/deliveries.entity';
 import { HTTP_RESPONSE } from 'src/interfaces/HTTP_RESPONSE.interface';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './schemas/orders.entyty';
+import { StatusName } from './schemas/status-name.enum';
 const moment = require('moment');
 
 @Injectable()
@@ -20,7 +22,8 @@ export class OrdersService {
     private userRep: Repository<User>,
     @InjectRepository(Delivery)
     private deliveryRep: Repository<Delivery>,
-  ) {}
+    private mailerService: MailerService
+  ) { }
 
   async create(dto: CreateOrderDto): Promise<HTTP_RESPONSE> {
     const orderDate = moment().format('YYYY-MM-DD');
@@ -64,16 +67,38 @@ export class OrdersService {
 
   async update(id: string, dto: UpdateOrderDto): Promise<HTTP_RESPONSE> {
     try {
-      const updatedOrder = await this.orderRep.update(id, dto);
+      if (dto.status == StatusName.DELiVERIED) {
+        const order = await this.orderRep.findOne({
+          where: { id },
+          join: {
+            alias: 'order',
+            leftJoinAndSelect: {
+              user: 'order.user',
+            },
+          },
+        });
+        await this.mailerService.sendMail({
+          to: order.user.email,
+          subject: "Your order",
+          template: './newOrderStatus',
+          context: {
+            name: order.user.name,
+            surname: order.user.surname,
+            status: dto.status,
+          },
+        });
+      }
+      await this.orderRep.update(id, dto);
+      const updatedOrder = await this.orderRep.findOne(id);
       return {
         data: updatedOrder,
-        message: 'Created order',
+        message: 'Updated order',
         success: true,
       };
     } catch (e) {
       return {
         data: e,
-        message: "Can't create order",
+        message: "Can't update order",
         success: false,
       };
     }
@@ -120,9 +145,23 @@ export class OrdersService {
     }
   }
 
-  async findAll(): Promise<HTTP_RESPONSE> {
+  async findAll(filter: string): Promise<HTTP_RESPONSE> {
+    const howToSort = (filter == 'deliveried' || filter == 'colsed') ? 'DESC' : 'ASC';
     try {
-      const orders = await this.orderRep.find();
+      const orders = await this.orderRep.find({
+        where: {
+          status: ILike(`%${filter}%`)
+        },
+        join: {
+          alias: 'order',
+          leftJoinAndSelect: {
+            user: 'order.user'
+          }
+        },
+        order: {
+          orderDate: howToSort
+        }
+      });
       if (!orders) {
         throw new HttpException(
           'No orders in database',

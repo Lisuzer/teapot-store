@@ -50,7 +50,7 @@ export class CartController {
   @ApiBearerAuth('JWT-auth')
   @Status(UserStatus.ADMIN)
   @UseGuards(AuthGuard('jwt'), StatusesGuard)
-  @Get('cart-by-id')
+  @Get(':id')
   getByOrderId(@Param() orderId: string) {
     return this.cartService.findByorderId(orderId);
   }
