@@ -11,8 +11,7 @@ async function bootstrap() {
   app.enableCors({
     origin: "*",
     allowedHeaders: "*",
-    credentials: true,
-    preflightContinue: true
+    credentials: true
   });
   app.use(cookieParser());
   app.useGlobalFilters(new AllExceptionsFilter());
