@@ -250,7 +250,6 @@ export class AuthController {
   async googleAuth(@Request() req) { }
 
   @Get('google/redirect')
-  @Redirect('https://teapots-vuejs-app.herokuapp.com', 200)
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Request() req) {
     return this.authService.signInWithGoogle(req);
