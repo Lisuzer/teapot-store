@@ -9,6 +9,7 @@ import {
   Res,
   Request,
   Header,
+  Redirect,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -249,6 +250,7 @@ export class AuthController {
   async googleAuth(@Request() req) { }
 
   @Get('google/redirect')
+  @Redirect('https://teapots-vuejs-app.herokuapp.com')
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Request() req) {
     return this.authService.signInWithGoogle(req);
