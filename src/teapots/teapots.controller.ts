@@ -209,20 +209,9 @@ export class TeapotsController {
     description: 'Invalid payload provided',
     type: HTTP_EXCEPTION,
   })
-  @ApiUnauthorizedResponse({
-    description: 'User unauthorized',
-    type: HTTP_EXCEPTION,
-  })
-  @ApiForbiddenResponse({
-    description: 'Permission not granted',
-    type: HTTP_EXCEPTION,
-  })
   @ApiOperation({
-    description: 'Get teapot by id | Required roles: Admin',
+    description: 'Get teapot by id | Required roles: Guest',
   })
-  @ApiBearerAuth('JWT-auth')
-  @Status(UserStatus.ADMIN)
-  @UseGuards(AuthGuard('jwt'), StatusesGuard)
   @Get(':id')
   async getById(@Param('id') id: string) {
     return this.teapotsService.getById(id);
