@@ -119,7 +119,7 @@ export class AuthService {
   async loginWithGoogle(loginUser: LoginWithGoogleDto) {
     const { email, googleId } = loginUser;
     try {
-      const foundUser = await this.userRep.findOne(
+      const user = await this.userRep.findOne(
         { email },
         {
           select: [
@@ -134,10 +134,10 @@ export class AuthService {
         },
       );
 
-      console.log(foundUser);
+      console.log(user);
 
-      if (foundUser) {
-        const token = await this.jwtService.signAsync({ foundUser });
+      if (user) {
+        const token = await this.jwtService.signAsync({ user });
         return { data: { token }, message: 'token', success: true };
       }
     } catch (e) {
