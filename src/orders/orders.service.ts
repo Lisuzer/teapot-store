@@ -5,7 +5,7 @@ import { User } from 'src/auth/schemas/users.entity';
 import { CartService } from 'src/carts/carts.service';
 import { Delivery } from 'src/deliveries/schemas/deliveries.entity';
 import { HTTP_RESPONSE } from 'src/interfaces/HTTP_RESPONSE.interface';
-import { ILike, Repository } from 'typeorm';
+import { ILike, Like, Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './schemas/orders.entyty';
@@ -145,23 +145,40 @@ export class OrdersService {
     }
   }
 
-  async findAll(filter: string): Promise<HTTP_RESPONSE> {
-    const howToSort = (filter == 'deliveried' || filter == 'colsed') ? 'DESC' : 'ASC';
+  async findAll(filter: StatusName): Promise<HTTP_RESPONSE> {
+    const howToSort = (filter == 'deliveried' || filter == 'closed') ? 'DESC' : 'ASC';
+    console.log(filter);
+    console.log(howToSort);
     try {
-      const orders = await this.orderRep.find({
-        where: {
-          status: ILike(`%${filter}%`)
-        },
-        join: {
-          alias: 'order',
-          leftJoinAndSelect: {
-            user: 'order.user'
+      let orders;
+      if (filter) {
+        orders = await this.orderRep.find({
+          where: {
+            'status': filter
+          },
+          join: {
+            alias: 'order',
+            leftJoinAndSelect: {
+              user: 'order.user'
+            }
+          },
+          order: {
+            'orderDate': howToSort
           }
-        },
-        order: {
-          orderDate: howToSort
-        }
-      });
+        });
+      } else {
+        orders = await this.orderRep.find({
+          join: {
+            alias: 'order',
+            leftJoinAndSelect: {
+              user: 'order.user'
+            }
+          },
+          order: {
+            'orderDate': howToSort
+          }
+        });
+      }
       if (!orders) {
         throw new HttpException(
           'No orders in database',

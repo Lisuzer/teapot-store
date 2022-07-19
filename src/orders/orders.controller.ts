@@ -10,6 +10,7 @@ import {
   Put,
   UseGuards,
   Optional,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -152,7 +153,7 @@ export class OrdersController {
   })
   @ApiQuery({
     name: 'filter',
-    type: String,
+    enum: StatusName,
     required: false,
     description: 'Optional'
   })
@@ -160,7 +161,7 @@ export class OrdersController {
   @Status(UserStatus.ADMIN)
   @UseGuards(AuthGuard('jwt'), StatusesGuard)
   @Get('get-all')
-  getAll(@Param() filter: string) {
+  getAll(@Query('filter') filter: StatusName) {
     return this.orderService.findAll(filter);
   }
 
