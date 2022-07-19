@@ -204,9 +204,17 @@ export class AuthService {
 
   async getUser({ user }: any): Promise<HTTP_RESPONSE> {
     try {
-      console.log(user.id);
       const result = await this.userRep.findOne({
         where: { id: user.id },
+        select: [
+          'id',
+          'name',
+          'surname',
+          'email',
+          'mobPhone',
+          'birthDate',
+          'status',
+        ],
       });
       return {
         data: result,

@@ -159,7 +159,7 @@ export class OrdersService {
           join: {
             alias: 'order',
             leftJoinAndSelect: {
-              user: 'order.user'
+              user: 'order.user',
             }
           },
           order: {
