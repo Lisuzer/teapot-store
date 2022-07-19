@@ -51,7 +51,7 @@ export class TeapotsService {
     const keyword = options.keyword || '';
     const skip = page * limit - limit;
     const sortBy = options.sortBy || 'amount';
-    const howSort = (options.howSort == 'DESC' ? 'DESC' : 'ASC') || 'DESC';
+    const howSort = options.howSort == 'ASC' ? 'ASC' : 'DESC';
     let teapots = [];
     if (sortBy == 'popularity') {
       teapots = await this.teapotRep
