@@ -251,7 +251,6 @@ export class AuthController {
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Request() req) {
-    window.location.href = "https://teapots-vuejs-app.herokuapp.com";
     return this.authService.signInWithGoogle(req);
   }
 }
