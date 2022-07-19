@@ -46,7 +46,7 @@ export class TeapotsService {
 
   async paginate(options: PaginationOptions): Promise<HTTP_RESPONSE> {
     const page = options.page || 1;
-    const manufacturerName = options.manufacturerName || '';
+    const manufacturerName = options.manufacturerName == 'All' ? '' : options.manufacturerName;
     const limit = options.limit || 20;
     const keyword = options.keyword || '';
     const skip = page * limit - limit;
