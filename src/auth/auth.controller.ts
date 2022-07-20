@@ -1,3 +1,4 @@
+import { Param } from '@nestjs/common';
 import {
   Body,
   Controller,
@@ -241,7 +242,7 @@ export class AuthController {
   @Status(UserStatus.ADMIN)
   @UseGuards(AuthGuard('jwt'), StatusesGuard)
   @Delete(':id')
-  removeUserById(@Body() id: string) {
+  removeUserById(@Param("id") id: string) {
     return this.authService.removeUserById(id);
   }
 

@@ -199,7 +199,7 @@ export class OrdersController {
   @Status(UserStatus.ADMIN)
   @UseGuards(AuthGuard('jwt'), StatusesGuard)
   @Get(':id')
-  getById(@Param() id: string) {
+  getById(@Param('id') id: string) {
     return this.orderService.findById(id);
   }
 }
