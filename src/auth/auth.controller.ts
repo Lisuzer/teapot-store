@@ -179,10 +179,10 @@ export class AuthController {
     return this.authService.updateProfile(req, updateUserDto);
   }
 
-  @Post('create-admin')
+  /*@Post('create-admin')
   createAdmin(@Body() userDto: CreateUserDto) {
     return this.authService.createAdmin(userDto);
-  }
+  }*/
 
   @ApiOkResponse({
     description: 'Entity deleted successfully',
@@ -253,5 +253,32 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Request() req) {
     return this.authService.signInWithGoogle(req);
+  }
+
+  @ApiOkResponse({
+    description: 'User successfully signed in',
+    type: HTTP_RESPONSE,
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid payload provided',
+    type: HTTP_EXCEPTION,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized user',
+    type: HTTP_EXCEPTION,
+  })
+  @ApiForbiddenResponse({
+    description: 'Permission not granted',
+    type: HTTP_EXCEPTION,
+  })
+  @ApiOperation({
+    description: 'Getting all system users | Required status: **Admin**',
+  })
+  @ApiBearerAuth('JWT-auth')
+  @Status(UserStatus.ADMIN)
+  @UseGuards(AuthGuard('jwt'), StatusesGuard)
+  @Post('sign-with-google')
+  signInWithGoogle(@Body() user) {
+    return this.authService.signInWithGoogle({ user });
   }
 }
