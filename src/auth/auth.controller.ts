@@ -263,20 +263,6 @@ export class AuthController {
     description: 'Invalid payload provided',
     type: HTTP_EXCEPTION,
   })
-  @ApiUnauthorizedResponse({
-    description: 'Unauthorized user',
-    type: HTTP_EXCEPTION,
-  })
-  @ApiForbiddenResponse({
-    description: 'Permission not granted',
-    type: HTTP_EXCEPTION,
-  })
-  @ApiOperation({
-    description: 'Getting all system users | Required status: **Admin**',
-  })
-  @ApiBearerAuth('JWT-auth')
-  @Status(UserStatus.ADMIN)
-  @UseGuards(AuthGuard('jwt'), StatusesGuard)
   @Post('sign-with-google')
   signInWithGoogle(@Body() user) {
     return this.authService.signInWithGoogle({ user });
