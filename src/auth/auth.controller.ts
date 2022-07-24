@@ -245,27 +245,4 @@ export class AuthController {
   removeUserById(@Param("id") id: string) {
     return this.authService.removeUserById(id);
   }
-
-  @Get('google')
-  @UseGuards(AuthGuard('google'))
-  async googleAuth(@Request() req) { }
-
-  @Get('google/redirect')
-  @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Request() req) {
-    return this.authService.signInWithGoogle(req);
-  }
-
-  @ApiOkResponse({
-    description: 'User successfully signed in',
-    type: HTTP_RESPONSE,
-  })
-  @ApiBadRequestResponse({
-    description: 'Invalid payload provided',
-    type: HTTP_EXCEPTION,
-  })
-  @Post('sign-with-google')
-  signInWithGoogle(@Body() user) {
-    return this.authService.signInWithGoogle({ user });
-  }
 }

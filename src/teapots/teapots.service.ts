@@ -6,11 +6,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CartService } from 'src/carts/carts.service';
-import { Cart } from 'src/carts/schemas/carts.entity';
 import { HTTP_RESPONSE } from 'src/interfaces/HTTP_RESPONSE.interface';
 import { Manufacturer } from 'src/manufacturers/schemas/manufacturers.entity';
 import { PaginationOptions } from 'src/pagination/pagination';
-import { ILike, Like, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CreateTeapotDto } from './dto/cteate-teapot.dto';
 import { UpdateTeapotDto } from './dto/update-teapot.dto';
 import { Teapot } from './schemas/teapots.entity';

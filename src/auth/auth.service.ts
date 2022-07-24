@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -15,8 +14,6 @@ import { HTTP_RESPONSE } from 'src/interfaces/HTTP_RESPONSE.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangeUserStatusDto } from './dto/change-user-status.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserStatus } from './schemas/user-status.enum';
-import { LoginWithGoogleDto } from './dto/login-with-google.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -116,35 +113,6 @@ export class AuthService {
     };
   }
 
-  async loginWithGoogle(loginUser: LoginWithGoogleDto) {
-    const { email, googleId } = loginUser;
-    try {
-      const user = await this.userRep.findOne(
-        { email },
-        {
-          select: [
-            'id',
-            'name',
-            'surname',
-            'email',
-            'mobPhone',
-            'birthDate',
-            'status',
-          ],
-        },
-      );
-
-      console.log(user);
-
-      if (user) {
-        const token = await this.jwtService.signAsync({ user });
-        return { data: { token }, message: 'token', success: true };
-      }
-    } catch (e) {
-      return { data: e, message: 'Can`t login', success: false };
-    }
-  }
-
   async updateProfile(
     { user }: any,
     updateUserDto: UpdateUserDto,
@@ -230,7 +198,7 @@ export class AuthService {
     }
   }
 
-  async createAdmin(user: CreateUserDto): Promise<HTTP_RESPONSE> {
+  /*async createAdmin(user: CreateUserDto): Promise<HTTP_RESPONSE> {
     const { email, password, mobPhone, name, surname } = user;
     const hashedPassword = await this.hashPassword(password);
     const { password: pass, ...newUser } = await this.userRep.save({
@@ -246,7 +214,7 @@ export class AuthService {
       success: true,
       message: 'Registered successfully',
     };
-  }
+  }*/
 
   async removeUser({ user }: any): Promise<HTTP_RESPONSE> {
     try {
@@ -283,50 +251,6 @@ export class AuthService {
         data: null,
         success: false,
         message: e,
-      };
-    }
-  }
-
-  async signInWithGoogle(data): Promise<HTTP_RESPONSE> {
-    if (!data.user) throw new BadRequestException();
-
-    let user = await this.userRep.findOne({
-      where: [{ googleId: data.user.id }],
-    });
-
-    if (user)
-      return await this.loginWithGoogle({
-        googleId: data.user.googleId,
-        email: data.user.email,
-      });
-
-    user = await this.userRep.findOne({ where: [{ email: data.user.email }] });
-
-    if (user) {
-      await this.userRep.update(user.id, { googleId: data.user.googleId });
-      return await this.loginWithGoogle({
-        googleId: data.user.googleId,
-        email: user.email,
-      });
-    }
-
-    try {
-      const newUser = new User();
-      newUser.name = data.user.name;
-      newUser.surname = data.user.surname;
-      newUser.email = data.user.email;
-      newUser.googleId = data.user.googleId;
-      console.log(newUser);
-      await this.userRep.save(newUser);
-      return await this.loginWithGoogle({
-        googleId: newUser.googleId,
-        email: newUser.email,
-      });
-    } catch (e) {
-      return {
-        data: e,
-        message: "Can't login with google",
-        success: false,
       };
     }
   }
